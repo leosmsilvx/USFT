@@ -277,7 +277,7 @@ InstalarAtualizacao(*) {
         MsgBox("Pause o farm com F11 antes de instalar a atualização.", "USFT")
         return
     }
-    if MsgBox("Instalar a versão " versaoDisponivel " e reiniciar o USFT?`nUma cópia da versão atual será salva em backups. Seus amigos serão preservados.", "USFT", "YesNo Icon?") != "Yes"
+    if MsgBox("Instalar a versão " versaoDisponivel " e reiniciar o USFT?`nSeus amigos serão preservados.", "USFT", "YesNo Icon?") != "Yes"
         return
     ; Revalida: F11 pode ter sido acionado enquanto a confirmacao estava aberta.
     if ativo
@@ -298,10 +298,10 @@ AplicarAtualizacao() {
     global instalandoAtualizacao
     for arquivo in arquivosAtualizacao
         ValidarArquivoAtualizacao(arquivo, FileRead(pastaAtualizacao "\" arquivo, "UTF-8"))
-    backup := A_ScriptDir "\backups\" VERSAO "-" A_Now "-" A_TickCount
+    backup := pastaAtualizacao "\recuperacao"
     DirCreate(backup)
     existentes := Map(), alterados := []
-    ; Faz todos os backups antes de substituir qualquer arquivo.
+    ; Copias somente na pasta temporaria, removidas apos a atualizacao.
     for arquivo in arquivosAtualizacao {
         existentes[arquivo] := !!FileExist(A_ScriptDir "\" arquivo)
         if existentes[arquivo] {
@@ -331,7 +331,12 @@ AplicarAtualizacao() {
                 falhas .= "`nRestaure manualmente: " arquivo
             }
         }
-        throw Error(erro.Message "`nBackup: " backup falhas)
+        if (falhas != "") {
+            ; Preserva a recuperacao temporaria se algum arquivo nao puder ser restaurado.
+            pastaAtualizacao := ""
+            throw Error(erro.Message "`nCópia de recuperação: " backup falhas)
+        }
+        throw Error(erro.Message "`nOs arquivos anteriores foram restaurados.")
     }
     LimparAtualizacao()
     AtualizarStatusVersoes("Versão " versaoDisponivel " instalada. Reiniciando...")

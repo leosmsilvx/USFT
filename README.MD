@@ -20,3 +20,7 @@ Preencha `amigos.txt` com um nome por linha. Ao atualizar uma instalação exist
 ## Abertura do jogo e UAC
 
 Se o Windows solicitar permissão para o Wellbia.com Security Loader ao clicar em Jogar, confirme manualmente em Sim. O AutoHotkey comum não consegue interagir com o UAC na área de trabalho protegida. Depois da confirmação e do carregamento, o fluxo de recuperação continua monitorando o Trove.
+
+## Arquivos temporários da atualização
+
+Na versão 1.0.4, o atualizador não cria uma pasta backups junto ao programa. As cópias necessárias para reverter uma falha ficam somente na pasta temporária da atualização e são removidas ao concluir a instalação ou a restauração. Se não for possível restaurar algum arquivo, a cópia temporária é preservada e o programa informa o caminho para recuperação manual. O arquivo amigos.txt é preservado.

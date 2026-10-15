@@ -5,6 +5,11 @@
 - A primeira carga de mundo após a recuperação não envia convites aos amigos.
 - Depois dessa carga, a máquina de estados retoma a busca por ship e a validação normal do mundo.
 
+### Atualizador
+- A atualização não cria mais a pasta backups ao lado do programa.
+- As cópias de recuperação são temporárias e removidas após a instalação ou restauração bem-sucedida. Se a restauração falhar, o caminho da cópia temporária é informado para recuperação manual.
+- O arquivo amigos.txt continua preservado.
+
 ## [1.0.3] - 2026-10-15
 
 ### Validação do cronômetro

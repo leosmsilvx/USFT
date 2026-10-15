@@ -37,10 +37,13 @@ MostrarVersoes(*) {
         repositorio.OnEvent("Click", (*) => Run("https://github.com/leosmsilvx/USFT"))
         camposVersoes["repositorio"] := repositorio
         OnMessage(0x2B, DesenharBotaoPatchNotes) ; WM_DRAWITEM: botoes nativos com tema escuro.
+        janelaVersoes.SetFont("s16 bold cFFD54A")
+        camposVersoes["destaque"] := janelaVersoes.AddText("x24 y210 w672 h32 Center +0x200",
+            "GRANDE NOTÍCIA! A VERSÃO OFICIAL 1.0.0 CHEGOU!")
         janelaVersoes.SetFont("s11 bold cFFFFFF")
-        janelaVersoes.AddText("x24 y214 w600 h24", "Histórico de atualizações")
+        camposVersoes["historico"] := janelaVersoes.AddText("x24 y250 w672 h24", "Histórico de atualizações")
         janelaVersoes.SetFont("s10 norm cE7EDF5")
-        camposVersoes["notas"] := janelaVersoes.AddEdit("x24 y248 w672 h390 ReadOnly Multi +VScroll -HScroll -E0x200 Background191F23")
+        camposVersoes["notas"] := janelaVersoes.AddEdit("x24 y282 w672 h354 ReadOnly Multi +VScroll -HScroll -E0x200 Background191F23")
         ; Tema da barra de rolagem consistente com o fundo escuro em Windows compativeis.
         DllCall("UxTheme\SetWindowTheme", "Ptr", camposVersoes["notas"].Hwnd, "Str", "DarkMode_Explorer", "Ptr", 0)
         janelaVersoes.OnEvent("Size", RedimensionarPatchNotes)
@@ -65,9 +68,9 @@ RedimensionarPatchNotes(janela, estado, largura, altura) {
     if (estado = -1)
         return
     camposVersoes["barra"].Move(, , , altura)
-    for chave in ["versao", "status", "notas"]
+    for chave in ["versao", "status", "destaque", "historico", "notas"]
         camposVersoes[chave].Move(, , largura - 48)
-    camposVersoes["notas"].Move(, , , Max(100, altura - 272))
+    camposVersoes["notas"].Move(, , , Max(100, altura - 306))
     larguraBotao := Floor((largura - 60) / 2)
     for indice, chave in ["instalar", "repositorio"]
         camposVersoes[chave].Move(24 + (indice - 1) * (larguraBotao + 12), , larguraBotao)
@@ -125,9 +128,24 @@ AtualizarStatusVersoes(texto) {
 }
 
 CompararVersoes(a, b) {
-    if !RegExMatch(a, "^\d+\.\d+\.\d+$") || !RegExMatch(b, "^\d+\.\d+\.\d+$")
-        throw Error("Versão inválida; esperado major.minor.patch.")
-    partesA := StrSplit(a, "."), partesB := StrSplit(b, ".")
+    ; As versoes 2.x publicadas durante os testes agora pertencem a serie beta b1.x.x.
+    betasLegadas := Map("2.9.4", "b1.9.4", "2.10.0", "b1.10.0",
+        "2.11.0", "b1.11.0", "2.11.3", "b1.11.3")
+    if betasLegadas.Has(a)
+        a := betasLegadas[a]
+    if betasLegadas.Has(b)
+        b := betasLegadas[b]
+
+    betaA := RegExMatch(a, "^b(\d+\.\d+\.\d+)$", &partesBetaA)
+    betaB := RegExMatch(b, "^b(\d+\.\d+\.\d+)$", &partesBetaB)
+    if (betaA != betaB)
+        return betaA ? -1 : 1
+
+    versaoA := betaA ? partesBetaA[1] : a
+    versaoB := betaB ? partesBetaB[1] : b
+    if !RegExMatch(versaoA, "^\d+\.\d+\.\d+$") || !RegExMatch(versaoB, "^\d+\.\d+\.\d+$")
+        throw Error("Versão inválida; esperado major.minor.patch ou bmajor.minor.patch.")
+    partesA := StrSplit(versaoA, "."), partesB := StrSplit(versaoB, ".")
     Loop 3 {
         if (Integer(partesA[A_Index]) != Integer(partesB[A_Index]))
             return Integer(partesA[A_Index]) > Integer(partesB[A_Index]) ? 1 : -1

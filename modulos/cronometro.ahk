@@ -1,4 +1,4 @@
-; ===== CRONOMETRO: INICIAL 30s; CONFIRMADO 60s DURANTE A PAUSA =====
+; ===== CRONOMETRO: VALIDACOES A CADA 1s =====
 
 CancelarLeituraCronometro() {
     global processoOCR, resultadoOCR

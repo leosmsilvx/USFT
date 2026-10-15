@@ -1,4 +1,4 @@
-# Trove AFK 2.11.0
+# Trove AFK 1.0.0
 
 Execute somente **trove.ahk**.
 

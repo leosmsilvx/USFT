@@ -147,11 +147,10 @@ AtualizarAvisoPainel() {
 }
 
 AtualizarPainel() {
-    global painel, fundoPainel, camposPainel, ativo, convidarAmigos, estado, fimPausa
+    global painel, fundoPainel, camposPainel, ativo, convidarAmigos, estado
     global errosPainel
     global painelVisivel
-    global cronometroConfirmado
-    global inicioValidacaoCronometro, TEMPO_VALIDACAO_CRONOMETRO, inicioSemFocoCronometro
+    global cronometroConfirmado, ultimaLeituraPainel
     global ultimoChat, INTERVALO_CHAT, recuperandoErrorHandler
     global PAINEL_LARGURA, PAINEL_ALTURA
     static ultimoX := "", ultimoY := ""
@@ -177,14 +176,8 @@ AtualizarPainel() {
     AtualizarCampoPainel("estado", descricao = "" ? "" : "Estado: " descricao)
 
     tempo := ""
-    if (ativo && !cronometroConfirmado && (estado = "DUNGEON" || estado = "CONVIDANDO")) {
-        ; A exibicao tambem congela durante a perda de foco, como a validacao.
-        agoraValidacao := inicioSemFocoCronometro != 0 ? inicioSemFocoCronometro : A_TickCount
-        segundos := Max(0, Ceil((TEMPO_VALIDACAO_CRONOMETRO - (agoraValidacao - inicioValidacaoCronometro)) / 1000))
-        tempo := "Timer: " Format("{:02}:{:02}", Floor(segundos / 60), Mod(segundos, 60))
-    } else if (ativo && fimPausa > 0 && (estado = "DUNGEON" || estado = "CONVIDANDO")) {
-        segundos := Max(0, Ceil((fimPausa - A_TickCount) / 1000))
-        tempo := "Timer: " Format("{:02}:{:02}", Floor(segundos / 60), Mod(segundos, 60))
+    if (ativo && (estado = "DUNGEON" || estado = "CONVIDANDO" || estado = "VERIFICANDO_DUNGEON")) {
+        tempo := "Validacao: " ultimaLeituraPainel
     } else if (ativo && estado = "PROCURANDO") {
         segundos := ultimoChat = 0 ? 0 : Max(0, Ceil((INTERVALO_CHAT - (A_TickCount - ultimoChat)) / 1000))
         tempo := "Proxima msg: " Format("{:02}:{:02}", Floor(segundos / 60), Mod(segundos, 60))

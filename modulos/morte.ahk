@@ -17,7 +17,7 @@ ReiniciarMorte() {
     global ressurreicaoConfirmada, inicioMundoRessurreicao
     CancelarLeituraMorte()
     ultimaVerificacaoMorte := A_TickCount - INTERVALO_MORTE
-    ultimaLeituraMorte := "Verificacao a cada 60 segundos"
+    ultimaLeituraMorte := "Verificacao a cada 1 segundo"
     ressurreicaoConfirmada := false
     inicioMundoRessurreicao := 0
 }

@@ -16,7 +16,6 @@ global proximoAmigo := 1
 global ultimoConvite := 0
 global ultimaLeituraCronometro := 0
 global inicioValidacaoCronometro := 0
-global leiturasInvalidas := 0
 global cronometroConfirmado := false
 global motivoRetornoCronometro := ""
 global processoOCR := 0

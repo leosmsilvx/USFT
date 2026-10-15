@@ -36,7 +36,7 @@ RetomarCronometro() {
 }
 
 ReiniciarCronometro() {
-    global ultimaLeituraCronometro, leiturasInvalidas, cronometroConfirmado
+    global ultimaLeituraCronometro, cronometroConfirmado
     global ultimaLeituraPainel, inicioSemFocoCronometro
     global inicioValidacaoCronometro
 
@@ -44,17 +44,16 @@ ReiniciarCronometro() {
     inicioSemFocoCronometro := 0
     ultimaLeituraCronometro := A_TickCount
     inicioValidacaoCronometro := A_TickCount
-    leiturasInvalidas := 0
     cronometroConfirmado := false
     ultimaLeituraPainel := "Aguardando primeira verificacao"
 }
 
 VerificarCronometro() {
-    global ultimaLeituraCronometro, leiturasInvalidas, cronometroConfirmado
+    global ultimaLeituraCronometro, cronometroConfirmado
     global processoOCR, resultadoOCR, INTERVALO_CRONOMETRO
     global CRONOMETRO_X, CRONOMETRO_Y, CRONOMETRO_W, CRONOMETRO_H
     global processoMorte
-    global estado, INTERVALO_CRONOMETRO_ATIVO, motivoRetornoCronometro, LIMITE_CONFIRMACOES_ZERO
+    global estado, INTERVALO_CRONOMETRO_ATIVO, motivoRetornoCronometro
     global fimPausa, PAUSA_DUNGEON, ultimoPulo
     global inicioValidacaoCronometro, TEMPO_VALIDACAO_CRONOMETRO, validacaoAntesChat
 
@@ -88,7 +87,6 @@ VerificarCronometro() {
             LimparErro("OCR")
             RegistrarLeitura("Cronometro ativo confirmado")
             cronometroConfirmado := true
-            leiturasInvalidas := 0
             if (estado = "VERIFICANDO_DUNGEON") {
                 estado := "DUNGEON"
                 ultimoPulo := A_TickCount
@@ -99,37 +97,29 @@ VerificarCronometro() {
             AtualizarPainel()
             return false
         }
-        if (leitura = "ZERO" || leitura = "AUSENTE") {
+        if (leitura = "AUSENTE") {
             LimparErro("OCR")
-            RegistrarLeitura(leitura = "ZERO" ? "Cronometro zerado" : "Cronometro ausente")
-            if (estado = "VERIFICANDO_DUNGEON") {
-                RetomarBuscaShip("SEM DUNGEON 5-STAR ATIVA - PROCURANDO SHIP")
-                validacaoAntesChat := A_TickCount
-                return false
-            }
+            RegistrarLeitura("Cronômetro ausente")
+            motivoRetornoCronometro := "CRONÔMETRO AUSENTE - PROCURANDO SHIP"
+            return true
+        }
+        if (leitura = "ZERO") {
+            LimparErro("OCR")
+            RegistrarLeitura("Aguardando início da dungeon")
             if (cronometroConfirmado) {
-                if (leitura = "AUSENTE") {
-                    motivoRetornoCronometro := "CRONOMETRO AUSENTE - PROCURANDO SHIP"
-                    return true
-                }
-                ; Somente 00:00 exige duas confirmacoes consecutivas.
-                leiturasInvalidas += 1
-                if (leiturasInvalidas >= LIMITE_CONFIRMACOES_ZERO) {
-                    motivoRetornoCronometro := "CRONOMETRO ZERADO CONFIRMADO 2X - PROCURANDO SHIP"
-                    return true
-                }
-                return false
+                ; Ao zerar um cronometro antes ativo, inicia uma nova janela de espera.
+                cronometroConfirmado := false
+                inicioValidacaoCronometro := A_TickCount
+                fimPausa := 0
             }
-            leiturasInvalidas += 1
         } else {
-            leiturasInvalidas := 0
             RegistrarErro("OCR", leitura = "ILEGIVEL"
                 ? "Cronometro visivel, mas o tempo esta ilegivel. Aguardando nova leitura."
                 : "Falha ao ler o cronometro. Contagem reiniciada.")
         }
     }
 
-    if (!cronometroConfirmado && (estado = "DUNGEON" || estado = "CONVIDANDO")
+    if (!cronometroConfirmado && (estado = "VERIFICANDO_DUNGEON" || estado = "DUNGEON" || estado = "CONVIDANDO")
         && A_TickCount - inicioValidacaoCronometro >= TEMPO_VALIDACAO_CRONOMETRO) {
         motivoRetornoCronometro := "3 MIN SEM CRONOMETRO ATIVO - PROCURANDO SHIP"
         return true
@@ -158,7 +148,6 @@ VerificarCronometro() {
         Run(comando, A_ScriptDir, "Hide", &processoOCR)
     } catch Error as erro {
         processoOCR := 0
-        leiturasInvalidas := 0
         diagnostico := "Etapa: " etapaOCR "`nErro: " erro.Message "`nOrigem: " erro.What
             . "`nLinha: " erro.Line "`nDetalhe: " erro.Extra
         try FileAppend(FormatTime(, "yyyy-MM-dd HH:mm:ss") "`n" diagnostico "`n`n",

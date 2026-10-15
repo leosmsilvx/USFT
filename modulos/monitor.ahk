@@ -48,8 +48,10 @@ Monitorar() {
 
         ; Identifica a dungeon antes de cada envio no chat.
         if (estado = "VERIFICANDO_DUNGEON") {
-            if (!TelaPreta())
-                VerificarCronometro()
+            if (!TelaPreta() && VerificarCronometro()) {
+                RetomarBuscaShip(motivoRetornoCronometro)
+                validacaoAntesChat := A_TickCount
+            }
             return
         }
 

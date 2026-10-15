@@ -1,3 +1,12 @@
+## [1.0.3] - 2026-10-15
+
+### Validação do cronômetro
+- Cronômetro ausente retorna à busca por ship imediatamente, inclusive durante os convites e a validação inicial.
+- Cronômetro visível em 00:00 aguarda até três minutos pelo início da dungeon, mantendo a validação a cada segundo.
+- Se o cronômetro ficar ativo nesse período, a dungeon é confirmada; se desaparecer, a busca é retomada imediatamente.
+- Ao terminar os três minutos sem um cronômetro ativo, a busca por ship é retomada também na conferência anterior ao chat.
+- Um cronômetro anteriormente ativo que volta a 00:00 inicia uma nova espera de três minutos, substituindo a antiga saída após duas leituras zeradas.
+
 ## [1.0.2] - 2026-10-15
 
 ### Interface

@@ -4,6 +4,7 @@ ReiniciarWatchdog() {
     global inicioAusenciaTrove, aguardandoBootTrove, inicioBootTrove
     global inicioFocoTrove, ultimaTentativaGlyph, watchdogExecutando, geracaoWatchdog
     global inicioErrorHandler, recuperandoErrorHandler, inicioFechamentoTrove
+    global pularConvitesAposCrash
 
     ; A geracao invalida uma tentativa interrompida pela alternancia do farm.
     geracaoWatchdog += 1
@@ -16,6 +17,7 @@ ReiniciarWatchdog() {
     inicioErrorHandler := 0
     recuperandoErrorHandler := false
     inicioFechamentoTrove := 0
+    pularConvitesAposCrash := false
     LimparErro("WATCHDOG")
 }
 
@@ -24,6 +26,7 @@ VerificarCrashTrove() {
     global inicioFocoTrove, ultimaTentativaGlyph, watchdogExecutando, geracaoWatchdog
     global CONFIRMACAO_CRASH, ESPERA_BOOT_TROVE, CONFIRMACAO_BOOT_TROVE
     global INTERVALO_RETENTATIVA_GLYPH
+    global pularConvitesAposCrash
 
     agora := A_TickCount
     geracaoAtual := geracaoWatchdog
@@ -57,6 +60,10 @@ VerificarCrashTrove() {
                     inicioBootTrove := 0
                     inicioFocoTrove := 0
                     ultimaTentativaGlyph := 0
+                    ; Fecha o Welcome exibido depois do reboot e impede convites
+                    ; na primeira carga de mundo associada a esta recuperacao.
+                    SendInput("{Esc}")
+                    pularConvitesAposCrash := true
                     LimparErro("WATCHDOG")
                     ReiniciarMorte()
                     RetomarBuscaShip("TROVE REABERTO - PROCURANDO SHIP")

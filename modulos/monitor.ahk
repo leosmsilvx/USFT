@@ -13,6 +13,7 @@ Monitorar() {
     global motivoRetornoCronometro
     global inicioMundoRessurreicao
     global validacaoAntesChat, cronometroConfirmado
+    global pularConvitesAposCrash
 
     if (!ativo || verificando)
         return
@@ -74,6 +75,12 @@ Monitorar() {
 
             if (agora - inicioMundo < CONFIRMACAO_MUNDO)
                 return
+
+            if (pularConvitesAposCrash) {
+                pularConvitesAposCrash := false
+                RetomarBuscaShip("CRASH RECUPERADO - PROCURANDO SHIP SEM CONVITES")
+                return
+            }
 
             amigosPendentes := convidarAmigos ? LerAmigos() : []
             proximoAmigo := 1

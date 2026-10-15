@@ -48,3 +48,4 @@ global geracaoWatchdog := 0
 global inicioErrorHandler := 0
 global recuperandoErrorHandler := false
 global inicioFechamentoTrove := 0
+global pularConvitesAposCrash := false

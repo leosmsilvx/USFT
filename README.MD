@@ -1,6 +1,6 @@
-# Trove AFK 1.0.3
+# Trove AFK 1.0.4
 
-Versão atual: **v1.0.3**. Requer Windows e AutoHotkey v2.
+Versão atual: **v1.0.4**. Requer Windows e AutoHotkey v2.
 
 Execute somente **trove.ahk**.
 

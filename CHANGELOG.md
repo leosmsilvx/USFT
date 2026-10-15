@@ -1,3 +1,10 @@
+## [1.0.4] - 2026-10-15
+
+### Recuperação de crash
+- Ao concluir a reabertura do Trove, o script pressiona `Esc` para fechar a tela de Welcome.
+- A primeira carga de mundo após a recuperação não envia convites aos amigos.
+- Depois dessa carga, a máquina de estados retoma a busca por ship e a validação normal do mundo.
+
 ## [1.0.3] - 2026-10-15
 
 ### Validação do cronômetro

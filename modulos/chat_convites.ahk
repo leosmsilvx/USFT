@@ -48,8 +48,9 @@ EnviarTextoChat(texto) {
 
 GarantirArquivoAmigos() {
     global ARQUIVO_AMIGOS
-    if !FileExist(ARQUIVO_AMIGOS)
-        FileAppend("", ARQUIVO_AMIGOS, "UTF-8-RAW")
+    if FileExist(ARQUIVO_AMIGOS)
+        return
+    FileAppend("", ARQUIVO_AMIGOS, "UTF-8-RAW")
 }
 
 LerAmigos() {

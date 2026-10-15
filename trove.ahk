@@ -27,19 +27,21 @@ SendMode("Input")
 CoordMode("Pixel", "Client")
 
 ; Includes opcionais permitem que clientes 2.10 baixem primeiro este bootstrap.
-#Include *i "%A_ScriptDir%\modulos\configuracao.ahk"
-#Include *i "%A_ScriptDir%\modulos\estado.ahk"
-#Include *i "%A_ScriptDir%\modulos\farm.ahk"
-#Include *i "%A_ScriptDir%\modulos\monitor.ahk"
-#Include *i "%A_ScriptDir%\modulos\watchdog.ahk"
-#Include *i "%A_ScriptDir%\modulos\cronometro.ahk"
-#Include *i "%A_ScriptDir%\modulos\tela.ahk"
-#Include *i "%A_ScriptDir%\modulos\chat_convites.ahk"
-#Include *i "%A_ScriptDir%\modulos\morte.ahk"
-#Include *i "%A_ScriptDir%\modulos\painel.ahk"
-#Include *i "%A_ScriptDir%\modulos\ocr.ahk"
-#Include *i "%A_ScriptDir%\modulos\atualizacoes.ahk"
+#Include *i %A_ScriptDir%\modulos\configuracao.ahk
+#Include *i %A_ScriptDir%\modulos\estado.ahk
+#Include *i %A_ScriptDir%\modulos\farm.ahk
+#Include *i %A_ScriptDir%\modulos\monitor.ahk
+#Include *i %A_ScriptDir%\modulos\watchdog.ahk
+#Include *i %A_ScriptDir%\modulos\cronometro.ahk
+#Include *i %A_ScriptDir%\modulos\tela.ahk
+#Include *i %A_ScriptDir%\modulos\chat_convites.ahk
+#Include *i %A_ScriptDir%\modulos\morte.ahk
+#Include *i %A_ScriptDir%\modulos\painel.ahk
+#Include *i %A_ScriptDir%\modulos\ocr.ahk
+#Include *i %A_ScriptDir%\modulos\atualizacoes.ahk
 
+; Na primeira migracao, as funcoes abaixo ainda nao existem antes do Reload.
+#Warn VarUnset, Off
 if !ModulosUSFTDisponiveis() {
     try {
         InstalarModulosUSFT()
@@ -51,15 +53,17 @@ if !ModulosUSFTDisponiveis() {
     ExitApp()
 }
 
-try Func("GarantirArquivoAmigos").Call()
-catch Error as erro
-    errosPainel["AMIGOS"] := "Não foi possível criar amigos.txt: " erro.Message
-Func("IniciarPainel").Call()
-Func("IniciarAtualizacoes").Call()
-SetTimer(Func("AtualizarPainel"), 500)
+try {
+    GarantirArquivoAmigos()
+} catch Error as erro {
+    MsgBox("Não foi possível criar amigos.txt.`n`n" erro.Message, "USFT - Amigos")
+}
+IniciarPainel()
+IniciarAtualizacoes()
+SetTimer(AtualizarPainel, 500)
 
 ; Hotkeys ficam por ultimo para encerrar corretamente a secao de inicializacao.
-#Include *i "%A_ScriptDir%\modulos\atalhos.ahk"
+#Include *i %A_ScriptDir%\modulos\atalhos.ahk
 
 ModulosUSFTDisponiveis() {
     global ARQUIVOS_USFT

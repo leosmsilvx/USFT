@@ -10,7 +10,9 @@
 - O atualizador agora baixa, valida, salva em backup e substitui o arquivo principal e todos os módulos da aplicação.
 - Clientes da versão 2.10 que receberem apenas o novo `trove.ahk` baixam automaticamente os módulos ausentes antes de iniciar.
 - A janela de patch notes, a consulta automática de versão e o atalho F2 foram preservados na estrutura modular.
-- O arquivo `amigos.txt` continua fora da atualização e é criado automaticamente quando ainda não existe.
+- O arquivo `amigos.txt` continua fora da atualização; se já existir, é preservado sem alterações, e só é criado vazio quando estiver ausente.
+- Corrigido o carregamento dos módulos no AutoHotkey v2, removendo aspas inválidas dos caminhos das diretivas `#Include`.
+- Corrigidas as chamadas de inicialização que causavam os erros `Invalid base` e `global variable has not been assigned`.
 
 ## [2.10.0] - 2026-10-15
 

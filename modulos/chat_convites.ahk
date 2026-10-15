@@ -46,6 +46,12 @@ EnviarTextoChat(texto) {
 
 ; ===== LISTA DE AMIGOS E CONVITES =====
 
+GarantirArquivoAmigos() {
+    global ARQUIVO_AMIGOS
+    if !FileExist(ARQUIVO_AMIGOS)
+        FileAppend("", ARQUIVO_AMIGOS, "UTF-8-RAW")
+}
+
 LerAmigos() {
     global ARQUIVO_AMIGOS
 
@@ -54,6 +60,7 @@ LerAmigos() {
     nomesLidos.CaseSense := false
 
     try {
+        GarantirArquivoAmigos()
         conteudo := FileRead(ARQUIVO_AMIGOS, "UTF-8")
     } catch {
         RegistrarErro("AMIGOS", "Nao foi possivel ler amigos.txt. Nenhum convite enviado.")

@@ -1,7 +1,6 @@
 ; ===== CONFIGURACOES =====
 
-; Historico: CHANGELOG.md. Copias preservadas na pasta versoes.
-global VERSAO := "2.11"
+; A versao publicada permanece declarada em trove.ahk para o atualizador.
 global PAINEL_LARGURA := 300 ; px
 global PAINEL_ALTURA := 180 ; px
 global COR_BARRA_LATERAL := "353A3A"

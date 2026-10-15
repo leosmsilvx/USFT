@@ -89,7 +89,7 @@ IniciarPainel() {
     camposPainel["erro"] := painel.AddText("x12 y114 w" (PAINEL_LARGURA - 24) " h" Max(0, PAINEL_ALTURA - 152) " cFF9292")
     painel.SetFont("s8 norm cA9B7C9")
     painel.AddText("x12 y" (PAINEL_ALTURA - 34) " w" (PAINEL_LARGURA - 76) " h30 Left",
-        "F11: Iniciar/Parar | F9: Fechar`nF10: Alternar convites")
+        "F11: Iniciar/Parar | F10: Convites`nF9: Fechar | F2: Patch notes")
     painel.SetFont("s7 norm cA9B7C9")
     painel.AddText("x" (PAINEL_LARGURA - 58) " y" (PAINEL_ALTURA - 18) " w46 h14 Right", "v" VERSAO)
     fundoAvisoPainel := Gui("+AlwaysOnTop -Caption +ToolWindow -DPIScale +E0x20 +E0x08000000", "USFT - Fundo do aviso")

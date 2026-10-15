@@ -1,6 +1,9 @@
 ; ===== CONTROLE DO FARM =====
 
 IniciarFarm() {
+    global instalandoAtualizacao
+    if (instalandoAtualizacao)
+        return
     global ativo, estado, ultimoChat, ultimoPulo
     global inicioPreto, pretoBloqueado
     global inicioMundo, amigosPendentes, proximoAmigo, ultimoConvite

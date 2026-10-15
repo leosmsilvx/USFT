@@ -12,6 +12,8 @@ F11:: {
 
 F9::ExitApp()
 
+F2::MostrarVersoes()
+
 F10:: {
     global convidarAmigos
 

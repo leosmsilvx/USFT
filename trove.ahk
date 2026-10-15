@@ -8,7 +8,7 @@ CoordMode("Pixel", "Client")
 ; ===== CONFIGURACOES =====
 
 ; Historico: CHANGELOG.md. Copias preservadas na pasta versoes.
-global VERSAO := "2.9.3"
+global VERSAO := "2.9.4"
 global PAINEL_LARGURA := 300 ; px
 global PAINEL_ALTURA := 180 ; px
 global COR_BARRA_LATERAL := "353A3A"
@@ -25,7 +25,7 @@ global CONFIRMACAO_PRETO := 1500
 global LIMITE_PRETO := 30
 global ARQUIVO_AMIGOS := A_ScriptDir "\amigos.txt"
 global CONFIRMACAO_MUNDO := 3000
-global INTERVALO_CONVITES := 1500
+global INTERVALO_CONVITES := 2000
 global INTERVALO_CRONOMETRO := 1000
 global INTERVALO_CRONOMETRO_ATIVO := 1000
 global TEMPO_VALIDACAO_CRONOMETRO := 3 * 60 * 1000
@@ -38,6 +38,8 @@ global CONFIRMACAO_CRASH := 5000
 global ESPERA_BOOT_TROVE := 120000
 global CONFIRMACAO_BOOT_TROVE := 5000
 global INTERVALO_RETENTATIVA_GLYPH := 15000
+global CONFIRMACAO_ERROR_HANDLER := 1000
+global ESPERA_FECHAR_TROVE := 5000
 ; Regiao do titulo e tempo da dungeon em 1920x1080, proporcional ao cliente.
 global CRONOMETRO_X := 0.455
 global CRONOMETRO_Y := 0.105
@@ -93,56 +95,72 @@ global inicioFocoTrove := 0
 global ultimaTentativaGlyph := 0
 global watchdogExecutando := false
 global geracaoWatchdog := 0
+global inicioErrorHandler := 0
+global recuperandoErrorHandler := false
+global inicioFechamentoTrove := 0
 
 IniciarPainel()
 SetTimer(AtualizarPainel, 500)
 
-; CTRL + ALT + P - ATIVAR / PAUSAR
+; F11 INICIA, F9 PARA E F10 ALTERNA OS CONVITES.
 
-^!p:: {
-    global ativo, estado, ultimoChat, ultimoPulo
-    global inicioPreto, pretoBloqueado
-    global inicioMundo, amigosPendentes, proximoAmigo, ultimoConvite
-    global validacaoAntesChat
+F11::IniciarFarm()
+F9::PararFarm()
 
-    ativo := !ativo
-    validacaoAntesChat := 0
-    ReiniciarCronometro()
-    ReiniciarMorte()
-    ReiniciarWatchdog()
-
-    if (ativo) {
-        estado := "VERIFICANDO_DUNGEON"
-        ultimoChat := 0
-        ultimoPulo := A_TickCount
-        inicioPreto := 0
-        pretoBloqueado := false
-        inicioMundo := 0
-        amigosPendentes := []
-        proximoAmigo := 1
-        ultimoConvite := 0
-
-        SoundBeep(1000, 200)
-
-        SetTimer(Monitorar, INTERVALO_MONITOR)
-        Monitorar()
-    } else {
-        estado := "PARADO"
-        SetTimer(Monitorar, 0)
-
-        SoundBeep(600, 200)
-        Avisar("AUTO SHIP PAUSADO")
-    }
-}
-
-; CTRL + ALT + I - ATIVAR / DESATIVAR CONVITES (INDEPENDENTE DO AUTO SHIP)
-
-^!i:: {
+F10:: {
     global convidarAmigos
 
     convidarAmigos := !convidarAmigos
     Avisar(convidarAmigos ? "CONVITES DE AMIGOS ATIVADOS" : "CONVITES DE AMIGOS DESATIVADOS")
     SoundBeep(convidarAmigos ? 1100 : 600, 100)
+}
+
+IniciarFarm() {
+    global ativo, estado, ultimoChat, ultimoPulo
+    global inicioPreto, pretoBloqueado
+    global inicioMundo, amigosPendentes, proximoAmigo, ultimoConvite
+    global validacaoAntesChat
+
+    if (ativo)
+        return
+
+    ativo := true
+    validacaoAntesChat := 0
+    ReiniciarCronometro()
+    ReiniciarMorte()
+    ReiniciarWatchdog()
+
+    estado := "VERIFICANDO_DUNGEON"
+    ultimoChat := 0
+    ultimoPulo := A_TickCount
+    inicioPreto := 0
+    pretoBloqueado := false
+    inicioMundo := 0
+    amigosPendentes := []
+    proximoAmigo := 1
+    ultimoConvite := 0
+
+    SoundBeep(1000, 200)
+    SetTimer(Monitorar, INTERVALO_MONITOR)
+    Monitorar()
+}
+
+PararFarm() {
+    global ativo, estado, validacaoAntesChat
+
+    if (!ativo)
+        return
+
+    ativo := false
+    validacaoAntesChat := 0
+    ReiniciarCronometro()
+    ReiniciarMorte()
+    ReiniciarWatchdog()
+    estado := "PARADO"
+    SetTimer(Monitorar, 0)
+
+    SoundBeep(600, 200)
+    Avisar("AUTO SHIP PAUSADO")
 }
 
 ; CTRL + ALT + O - ENCERRAR
@@ -212,16 +230,17 @@ Monitorar() {
         if DetectarMudancaMundo(agora)
             return
 
+        ; Morte tem prioridade inclusive durante os 3 min de validacao do cronometro.
+        ; As travas processoOCR/processoMorte alternam os leitores sem sobreposicao.
+        if VerificarMorte()
+            return
+
         ; Identifica a dungeon antes de cada envio no chat.
         if (estado = "VERIFICANDO_DUNGEON") {
             if (!TelaPreta())
                 VerificarCronometro()
             return
         }
-
-        ; Busca ON habilita a ressurreicao em qualquer estado, independente do timer.
-        if VerificarMorte()
-            return
 
         if (estado = "RESSUSCITANDO") {
             AguardarRessurreicao()
@@ -380,8 +399,9 @@ DetectarMudancaMundo(agora) {
 ReiniciarWatchdog() {
     global inicioAusenciaTrove, aguardandoBootTrove, inicioBootTrove
     global inicioFocoTrove, ultimaTentativaGlyph, watchdogExecutando, geracaoWatchdog
+    global inicioErrorHandler, recuperandoErrorHandler, inicioFechamentoTrove
 
-    ; A geracao invalida uma tentativa interrompida por Ctrl+Alt+P.
+    ; A geracao invalida uma tentativa interrompida por F9.
     geracaoWatchdog += 1
     inicioAusenciaTrove := 0
     aguardandoBootTrove := false
@@ -389,6 +409,9 @@ ReiniciarWatchdog() {
     inicioFocoTrove := 0
     ultimaTentativaGlyph := 0
     watchdogExecutando := false
+    inicioErrorHandler := 0
+    recuperandoErrorHandler := false
+    inicioFechamentoTrove := 0
     LimparErro("WATCHDOG")
 }
 
@@ -400,6 +423,10 @@ VerificarCrashTrove() {
 
     agora := A_TickCount
     geracaoAtual := geracaoWatchdog
+
+    ; O processo do jogo pode continuar vivo depois do crash.
+    if VerificarErrorHandler(agora)
+        return true
 
     if ProcessExist("Trove_x64.exe") {
         inicioAusenciaTrove := 0
@@ -477,7 +504,7 @@ VerificarCrashTrove() {
         watchdogExecutando := false
     }
 
-    ; Se Ctrl+Alt+P mudou durante a tentativa, descarta o resultado antigo.
+    ; Se F9/F11 mudou o ciclo durante a tentativa, descarta o resultado antigo.
     Critical("On")
     if (!ativo || geracaoTentativa != geracaoWatchdog) {
         Critical("Off")
@@ -493,6 +520,97 @@ VerificarCrashTrove() {
     }
     Critical("Off")
     return true
+}
+
+VerificarErrorHandler(agora) {
+    global ativo, inicioErrorHandler, recuperandoErrorHandler, inicioFechamentoTrove
+    global aguardandoBootTrove, inicioBootTrove, inicioFocoTrove
+    global inicioAusenciaTrove, watchdogExecutando
+    global CONFIRMACAO_ERROR_HANDLER, ESPERA_FECHAR_TROVE, CONFIRMACAO_CRASH
+
+    janelasErro := ListarJanelasErrorHandler()
+
+    if (!recuperandoErrorHandler && janelasErro.Length = 0) {
+        inicioErrorHandler := 0
+        return false
+    }
+
+    SuspenderCronometro()
+    CancelarLeituraMorte()
+
+    if (!recuperandoErrorHandler) {
+        if (inicioErrorHandler = 0) {
+            inicioErrorHandler := agora
+            return true
+        }
+        if (agora - inicioErrorHandler < CONFIRMACAO_ERROR_HANDLER)
+            return true
+
+        recuperandoErrorHandler := true
+        inicioFechamentoTrove := agora
+        watchdogExecutando := true
+        aguardandoBootTrove := false
+        inicioBootTrove := 0
+        inicioFocoTrove := 0
+        RegistrarErro("WATCHDOG", "Crash confirmado. Encerrando Trove e Error Handler.")
+    }
+
+    if (!ativo)
+        return true
+
+    ; Fecha qualquer etapa do relatorio sem depender de botoes ou coordenadas.
+    for hwnd in janelasErro {
+        try WinClose("ahk_id " hwnd)
+    }
+
+    pidTrove := ProcessExist("Trove_x64.exe")
+    if (pidTrove) {
+        ; WinClose envia um fechamento direcionado, equivalente ao Alt+F4 no Trove.
+        try WinClose("ahk_exe Trove_x64.exe")
+        if (agora - inicioFechamentoTrove >= ESPERA_FECHAR_TROVE) {
+            ; Processo travado: ultimo recurso para garantir que o farm possa voltar.
+            try ProcessClose(pidTrove)
+        }
+        return true
+    }
+
+    if (janelasErro.Length > 0) {
+        if (agora - inicioFechamentoTrove >= ESPERA_FECHAR_TROVE) {
+            for hwnd in janelasErro {
+                try {
+                    pidErro := WinGetPID("ahk_id " hwnd)
+                    nomeErro := pidErro ? ProcessGetName(pidErro) : ""
+                    ; Nunca derruba o launcher nem o proprio script por causa do titulo.
+                    if (pidErro && nomeErro != "GlyphClientApp.exe"
+                        && nomeErro != "AutoHotkey64.exe" && nomeErro != "AutoHotkey32.exe")
+                        ProcessClose(pidErro)
+                }
+            }
+        }
+        return true
+    }
+
+    recuperandoErrorHandler := false
+    inicioErrorHandler := 0
+    inicioFechamentoTrove := 0
+    watchdogExecutando := false
+    ; Reaproveita imediatamente o fluxo ja validado de abertura pelo Glyph.
+    inicioAusenciaTrove := A_TickCount - CONFIRMACAO_CRASH
+    LimparErro("WATCHDOG")
+    return true
+}
+
+ListarJanelasErrorHandler() {
+    janelas := []
+    try {
+        for hwnd in WinGetList("Trove - Error Handler") {
+            try {
+                if (WinGetTitle("ahk_id " hwnd) = "Trove - Error Handler")
+                    janelas.Push(hwnd)
+            }
+        }
+    }
+    return janelas
 }
 
 AbrirTrovePeloGlyph() {
@@ -1172,7 +1290,7 @@ IniciarPainel() {
     camposPainel["erro"] := painel.AddText("x12 y114 w" (PAINEL_LARGURA - 24) " h" Max(0, PAINEL_ALTURA - 152) " cFF9292")
     painel.SetFont("s8 norm cA9B7C9")
     painel.AddText("x12 y" (PAINEL_ALTURA - 34) " w" (PAINEL_LARGURA - 76) " h30 Left",
-        "Ctrl+Alt+P: Alternar busca`nCtrl+Alt+I: Alternar convite de amigos")
+        "F11: Iniciar | F9: Parar`nF10: Alternar convites")
     painel.SetFont("s7 norm cA9B7C9")
     painel.AddText("x" (PAINEL_LARGURA - 58) " y" (PAINEL_ALTURA - 18) " w46 h14 Right", "v" VERSAO)
     fundoAvisoPainel := Gui("+AlwaysOnTop -Caption +ToolWindow -DPIScale +E0x20 +E0x08000000", "USFT - Fundo do aviso")
@@ -1235,6 +1353,7 @@ AtualizarPainel() {
     global painelVisivel
     global cronometroConfirmado
     global inicioValidacaoCronometro, TEMPO_VALIDACAO_CRONOMETRO, inicioSemFocoCronometro
+    global ultimoChat, INTERVALO_CHAT, recuperandoErrorHandler
     global PAINEL_LARGURA, PAINEL_ALTURA
     static ultimoX := "", ultimoY := ""
 
@@ -1252,7 +1371,9 @@ AtualizarPainel() {
     descricao := nomesEstados.Has(estado) ? nomesEstados[estado] : estado
     if (estado = "DUNGEON" && !cronometroConfirmado)
         descricao := "Validando cronometro"
-    if (ativo && !WinActive("ahk_exe Trove_x64.exe"))
+    if (recuperandoErrorHandler)
+        descricao := "Recuperando crash"
+    else if (ativo && !WinActive("ahk_exe Trove_x64.exe"))
         descricao := "Trove está sem foco"
     AtualizarCampoPainel("estado", descricao = "" ? "" : "Estado: " descricao)
 
@@ -1265,6 +1386,9 @@ AtualizarPainel() {
     } else if (ativo && fimPausa > 0 && (estado = "DUNGEON" || estado = "CONVIDANDO")) {
         segundos := Max(0, Ceil((fimPausa - A_TickCount) / 1000))
         tempo := "Timer: " Format("{:02}:{:02}", Floor(segundos / 60), Mod(segundos, 60))
+    } else if (ativo && estado = "PROCURANDO") {
+        segundos := ultimoChat = 0 ? 0 : Max(0, Ceil((INTERVALO_CHAT - (A_TickCount - ultimoChat)) / 1000))
+        tempo := "Proxima msg: " Format("{:02}:{:02}", Floor(segundos / 60), Mod(segundos, 60))
     }
     AtualizarCampoPainel("tempo", tempo)
 

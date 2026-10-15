@@ -1,8 +1,8 @@
-#Requires AutoHotkey v2.0
+﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 
 ; Mantida no arquivo principal: clientes instalados consultam esta linha no GitHub.
-global VERSAO := "2.11.0"
+global VERSAO := "2.11.1"
 global URL_ARQUIVOS_USFT := "https://raw.githubusercontent.com/leosmsilvx/USFT/main/"
 global ARQUIVOS_USFT := [
     "trove.ahk",
@@ -58,8 +58,8 @@ try {
 } catch Error as erro {
     MsgBox("Não foi possível criar amigos.txt.`n`n" erro.Message, "USFT - Amigos")
 }
-IniciarPainel()
 IniciarAtualizacoes()
+IniciarPainel()
 SetTimer(AtualizarPainel, 500)
 
 ; Hotkeys ficam por ultimo para encerrar corretamente a secao de inicializacao.

@@ -1,3 +1,10 @@
+﻿## [2.11.1] - 2026-10-15
+
+### Correções
+- A verificação da versão no GitHub começa imediatamente ao iniciar o trove.ahk, antes do carregamento do painel.
+- A consulta ao abrir o F2 continua disponível, assim como o aviso quando há uma versão mais recente.
+- O painel mostra um aviso em destaque quando o GitHub tem uma versão mais nova, indicando o F2 para atualizar.
+
 ## [2.11.0] - 2026-10-15
 
 ### Estrutura

@@ -1,4 +1,4 @@
-; ===== VERSOES, PATCH NOTES E ATUALIZADOR =====
+﻿; ===== VERSOES, PATCH NOTES E ATUALIZADOR =====
 
 global URL_ATUALIZACOES := URL_ARQUIVOS_USFT
 global janelaVersoes := 0, camposVersoes := Map()
@@ -13,7 +13,8 @@ IniciarAtualizacoes() {
     A_TrayMenu.Add("Verificar atualizações", (*) => VerificarAtualizacoes())
     A_TrayMenu.OnClick := 1
     OnExit(LimparAtualizacao)
-    SetTimer(VerificarAtualizacoes, -1500)
+    ; Consulta assim que o programa inicia, sem depender do painel ou do F2.
+    VerificarAtualizacoes()
 }
 
 MostrarVersoes(*) {

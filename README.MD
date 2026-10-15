@@ -1,58 +1,64 @@
-# Trove AFK — Versão 2.9.4 by bannnnn | minusclin
+# USFT - Trove AFK
 
-## 🛡️ Recuperação automática de crashes
+Versao atual: **2.10.0**. Requer Windows e AutoHotkey v2.
 
-- Detecta a janela **`Trove - Error Handler`**, mesmo quando o processo `Trove_x64.exe` permanece aberto.
-- Tenta primeiro o fechamento normal e direcionado do jogo.
-- Caso o Trove continue travado por mais de cinco segundos, encerra somente o processo do jogo.
-- Fecha as diferentes etapas do Error Handler sem depender de botões ou coordenadas.
-- Protege o Glyph e o próprio AutoHotkey contra encerramento acidental.
-- Após o fechamento, reutiliza automaticamente o fluxo de recuperação já existente:
-  1. Restaura o Glyph.
-  2. Inicia o Trove.
-  3. Aguarda o carregamento.
-  4. Confirma que o jogo está estável.
-  5. Retoma a busca por ship.
+Baixe o projeto completo e execute `trove.ahk`. O histórico é consultado no GitHub. Edite `amigos.txt` para configurar os convites; se o arquivo não existir, o programa cria um arquivo vazio sem sobrescrever uma lista existente.
 
-## 💀 Detecção de morte durante a validação
-
-- A morte agora também é verificada durante os três minutos de validação do cronômetro.
-- Isso evita que o farm permaneça parado até o fim da validação caso o personagem morra nesse período.
-- Os OCRs de morte e cronômetro são alternados, impedindo duas leituras simultâneas.
-
-## 👥 Convites de amigos
-
-- O intervalo entre convites foi aumentado de **1,5 para 2 segundos**.
-- A alteração evita o bloqueio temporário do jogo causado por convites enviados muito rapidamente.
-- Os nomes continuam sendo carregados do arquivo `amigos.txt`.
-- O <kbd>F10</kbd> alterna os convites entre ligados e desligados.
-
-## ⌨️ Novos atalhos
-
-| Tecla | Ação |
+| Atalho | Acao |
 |---|---|
-| <kbd>F11</kbd> | Iniciar o farm |
-| <kbd>F9</kbd> | Parar o farm |
-| <kbd>F10</kbd> | Ativar ou desativar os convites de amigos |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>B</kbd> | Exibir novamente o painel |
-| <kbd>B</kbd> | Ocultar o painel enquanto o Trove estiver ativo |
+| F11 | Iniciar ou pausar o farm |
+| F9 | Fechar o USFT |
+| F10 | Alternar convites de amigos |
+| Ctrl+Alt+B | Mostrar o painel |
+| B, dentro do Trove | Ocultar o painel |
+| F2 | Abrir patch notes |
 
-## ⏱️ Próxima mensagem
+## Patch notes e atualizacoes
 
-Enquanto o estado estiver em **“Procurando ship”**, o painel passa a exibir uma contagem regressiva:
+O histórico completo é lido do CHANGELOG.md publicado na branch main do GitHub e pode ser
+consultado na janela **Patch notes**, pelo atalho ou menu do icone
+na bandeja do Windows. A janela segue o tema escuro do painel e mostra o historico completo em uma unica area com rolagem.
 
-```text
-Próxima msg: MM:SS
-```
+Ao abrir, o USFT le a declaracao `global VERSAO` do proprio `trove.ahk` na branch `main` de
+[leosmsilvx/USFT](https://github.com/leosmsilvx/USFT). A comparacao e numerica
+(major.minor.patch), sem fazer downgrade. Ao abrir o F2, consulta a versão e o histórico no GitHub. Sem internet, a automação continua funcionando;
+a janela informa o erro e permite tentar novamente. Nao requer token.
 
-O contador indica quanto tempo falta para o próximo envio no chat.
+Quando houver uma versao nova, o aplicativo avisa e habilita **Atualizar**.
+Pause o farm e confirme a instalacao. Os dois arquivos do aplicativo sao
+baixados em segundo plano. O script baixado precisa corresponder ao consultado
+e o historico precisa conter as notas da versao oferecida. Se o script mudar
+entre a consulta e o download, faca uma nova verificacao antes de instalar.
+A consulta apenas le o arquivo remoto; nao executa seu codigo.
 
-## ✅ Validação
+Antes da substituicao, os arquivos anteriores sao copiados para
+`backups/<versao>-<data>-<contador>`. Depois, o aplicativo reinicia com o farm
+parado. `amigos.txt` e preservado. Alteracoes manuais feitas nos arquivos
+`.ahk` sao substituidas e continuam acessiveis no backup. Se a copia falhar,
+o atualizador tenta restaurar os arquivos e informa qualquer falha de restauracao.
+Para voltar manualmente, feche o USFT e copie os arquivos do backup para a pasta
+principal. Binarios compilados nao oferecem instalacao automatica.
 
-- Desenvolvida diretamente sobre a versão **2.9.3**.
-- Validada com o interpretador **AutoHotkey v2**.
-- Sintaxe e inicialização verificadas sem erros.
-- O arquivo original utilizado como base não foi sobrescrito.
+O histórico exibido vem do GitHub, e não do arquivo local. Para publicar novas notas, envie o CHANGELOG.md para a branch main. Reabra o F2 para recarregar. O botão Atualizar instala a versão oferecida; a consulta acontece automaticamente ao abrir a janela.
 
-> [!IMPORTANT]
-> A recuperação de um crash real deve ser validada em jogo antes da publicação definitiva, pois o teste automatizado não força o encerramento de uma sessão ativa do Trove.
+## Publicar uma versao
+
+1. Atualize `VERSAO` em `trove.ahk` (formato `2.10.1`, por exemplo).
+2. Adicione `## [2.10.1] - AAAA-MM-DD` no inicio do historico em `CHANGELOG.md`.
+3. Teste as alteracoes.
+4. Publique `trove.ahk` e `CHANGELOG.md`
+   juntos no mesmo commit na branch `main`.
+
+A fonte de versao e a branch main; tags e GitHub Releases nao sao consultados.
+Nao e necessario gerar manifesto nem executar script de publicacao.
+
+## Recursos do farm
+
+- Recuperacao automatica de crashes do Trove, incluindo Error Handler.
+- Reabertura pelo Glyph e retomada da busca por ship.
+- Deteccao de morte durante a validacao do cronometro, com OCR alternado.
+- Convites de amigos a cada 2 segundos.
+- Contagem regressiva para a proxima mensagem no chat.
+
+A recuperacao de crash e os eventos do jogo precisam ser validados em uma sessao
+real do Trove.

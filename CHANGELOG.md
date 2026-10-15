@@ -1,3 +1,13 @@
+## [1.0.1] - 2026-10-15
+
+### Interface
+- Busca renomeada para Farm Ship e Convite renomeado para Convidar amigos.
+- Atalhos exibidos como F11: Alternar Farm Ship e F10: Alternar convidar amigos.
+- Indicadores reposicionados e painel ajustado para acomodar os novos textos.
+
+### Abertura do jogo
+- A confirmação do Controle de Conta de Usuário do Windows (UAC) precisa ser aceita manualmente; o script não automatiza cliques na área de trabalho protegida.
+
 ## [1.0.0] - 2026-10-15
 
 ### GRANDE NOTÍCIA!

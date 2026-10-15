@@ -2,7 +2,7 @@
 #SingleInstance Force
 
 ; Mantida no arquivo principal: clientes instalados consultam esta linha no GitHub.
-global VERSAO := "1.0.0"
+global VERSAO := "1.0.1"
 global URL_ARQUIVOS_USFT := "https://raw.githubusercontent.com/leosmsilvx/USFT/main/"
 global ARQUIVOS_USFT := [
     "trove.ahk",

@@ -2,7 +2,7 @@
 
 ; A versao publicada permanece declarada em trove.ahk para o atualizador.
 global PAINEL_LARGURA := 300 ; px
-global PAINEL_ALTURA := 180 ; px
+global PAINEL_ALTURA := 200 ; px
 global COR_BARRA_LATERAL := "353A3A"
 global FONTE_PAINEL := "" ; preenchida com Roboto somente apos carregar do Google.
 global arquivoFonteGoogle := ""

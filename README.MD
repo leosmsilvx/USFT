@@ -1,6 +1,6 @@
-# Trove AFK 1.0.0
+# Trove AFK 1.0.1
 
-Versão atual: **v1.0.0**. Requer Windows e AutoHotkey v2.
+Versão atual: **v1.0.1**. Requer Windows e AutoHotkey v2.
 
 Execute somente **trove.ahk**.
 
@@ -10,9 +10,13 @@ Preencha `amigos.txt` com um nome por linha. Ao atualizar uma instalação exist
 
 ## Atalhos
 
-- **F11:** iniciar ou parar o farm.
-- **F10:** ativar ou desativar os convites.
+- **F11:** Alternar Farm Ship.
+- **F10:** Alternar convidar amigos.
 - **F9:** fechar o aplicativo.
 - **F2:** abrir as notas da versão e verificar atualizações.
 - **Ctrl + Alt + B:** exibir novamente o painel.
 - **B:** ocultar o painel enquanto o Trove estiver ativo.
+
+## Abertura do jogo e UAC
+
+Se o Windows solicitar permissão para o Wellbia.com Security Loader ao clicar em Jogar, confirme manualmente em Sim. O AutoHotkey comum não consegue interagir com o UAC na área de trabalho protegida. Depois da confirmação e do carregamento, o fluxo de recuperação continua monitorando o Trove.

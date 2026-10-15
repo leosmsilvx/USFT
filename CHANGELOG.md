@@ -1,3 +1,9 @@
+## [1.0.2] - 2026-10-15
+
+### Interface
+- O aviso de atualização agora exibe `Nova versão (vX.X.X) - Aperte F2 para atualizar`.
+- O aviso foi movido para a área imediatamente acima das teclas de atalho.
+
 ## [1.0.1] - 2026-10-15
 
 ### Interface

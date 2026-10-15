@@ -66,9 +66,7 @@ IniciarPainel() {
     painel.AddText("x0 y0 w3 h" PAINEL_ALTURA " Background" COR_BARRA_LATERAL, "")
     painel.SetFont("s10 cE7EDF5", FONTE_PAINEL)
     painel.SetFont("s12 bold cFFFFFF")
-    painel.AddText("x12 y8 w62 h24", "USFT")
-    painel.SetFont("s8 norm cFFD479")
-    camposPainel["atualizacao"] := painel.AddText("x80 y12 w" (PAINEL_LARGURA - 92) " h18")
+    painel.AddText("x12 y8 w" (PAINEL_LARGURA - 24) " h24", "USFT")
     painel.SetFont("s10 norm cE7EDF5")
     ; Rotulos, colchetes e indicadores separados: apenas os simbolos mudam de cor.
     ; Coordenadas fixas acomodam os dois rotulos e seus indicadores.
@@ -89,7 +87,9 @@ IniciarPainel() {
     camposPainel["tempo"] := painel.AddText("x12 y76 w" (PAINEL_LARGURA - 24) " h20")
     camposPainel["erroTitulo"] := painel.AddText("x12 y96 w" (PAINEL_LARGURA - 24) " h18 cFF7272")
     painel.SetFont("s8")
-    camposPainel["erro"] := painel.AddText("x12 y114 w" (PAINEL_LARGURA - 24) " h" Max(0, PAINEL_ALTURA - 172) " cFF9292")
+    camposPainel["erro"] := painel.AddText("x12 y114 w" (PAINEL_LARGURA - 24) " h" Max(0, PAINEL_ALTURA - 190) " cFF9292")
+    painel.SetFont("s8 norm cFFD479")
+    camposPainel["atualizacao"] := painel.AddText("x12 y" (PAINEL_ALTURA - 74) " w" (PAINEL_LARGURA - 24) " h18 Left")
     painel.SetFont("s8 norm cA9B7C9")
     painel.AddText("x12 y" (PAINEL_ALTURA - 54) " w" (PAINEL_LARGURA - 24) " h48 Left",
         "F11: Alternar Farm Ship`nF10: Alternar convidar amigos`nF9: Fechar | F2: Patch notes")
@@ -221,7 +221,7 @@ AtualizarPainel() {
 TextoAtualizacaoPainel() {
     global versaoDisponivel, VERSAO
     if (versaoDisponivel != "" && CompararVersoes(versaoDisponivel, VERSAO) > 0)
-        return "Nova versão " versaoDisponivel " • F2"
+        return "Nova versão (v" versaoDisponivel ") - Aperte F2 para atualizar"
     return ""
 }
 

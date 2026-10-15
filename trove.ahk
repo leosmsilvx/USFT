@@ -102,10 +102,17 @@ global inicioFechamentoTrove := 0
 IniciarPainel()
 SetTimer(AtualizarPainel, 500)
 
-; F11 INICIA, F9 PARA E F10 ALTERNA OS CONVITES.
+; F11 ALTERNA O FARM, F9 ENCERRA E F10 ALTERNA OS CONVITES.
 
-F11::IniciarFarm()
-F9::PararFarm()
+F11:: {
+    global ativo
+    if (ativo)
+        PararFarm()
+    else
+        IniciarFarm()
+}
+
+F9::ExitApp()
 
 F10:: {
     global convidarAmigos
@@ -401,7 +408,7 @@ ReiniciarWatchdog() {
     global inicioFocoTrove, ultimaTentativaGlyph, watchdogExecutando, geracaoWatchdog
     global inicioErrorHandler, recuperandoErrorHandler, inicioFechamentoTrove
 
-    ; A geracao invalida uma tentativa interrompida por F9.
+    ; A geracao invalida uma tentativa interrompida pela alternancia do farm.
     geracaoWatchdog += 1
     inicioAusenciaTrove := 0
     aguardandoBootTrove := false
@@ -504,7 +511,7 @@ VerificarCrashTrove() {
         watchdogExecutando := false
     }
 
-    ; Se F9/F11 mudou o ciclo durante a tentativa, descarta o resultado antigo.
+    ; Se F11 mudou o ciclo durante a tentativa, descarta o resultado antigo.
     Critical("On")
     if (!ativo || geracaoTentativa != geracaoWatchdog) {
         Critical("Off")
@@ -1290,7 +1297,7 @@ IniciarPainel() {
     camposPainel["erro"] := painel.AddText("x12 y114 w" (PAINEL_LARGURA - 24) " h" Max(0, PAINEL_ALTURA - 152) " cFF9292")
     painel.SetFont("s8 norm cA9B7C9")
     painel.AddText("x12 y" (PAINEL_ALTURA - 34) " w" (PAINEL_LARGURA - 76) " h30 Left",
-        "F11: Iniciar | F9: Parar`nF10: Alternar convites")
+        "F11: Iniciar/Parar | F9: Fechar`nF10: Alternar convites")
     painel.SetFont("s7 norm cA9B7C9")
     painel.AddText("x" (PAINEL_LARGURA - 58) " y" (PAINEL_ALTURA - 18) " w46 h14 Right", "v" VERSAO)
     fundoAvisoPainel := Gui("+AlwaysOnTop -Caption +ToolWindow -DPIScale +E0x20 +E0x08000000", "USFT - Fundo do aviso")

@@ -108,7 +108,7 @@ DesenharBotaoPatchNotes(wParam, lParam, msg, hwnd) {
 CarregarNotas(texto) {
     global camposVersoes
     ; Exibe todo o arquivo, mantendo a ordem das versoes e todas as notas.
-    texto := RegExReplace(StrReplace(texto, "`r"), "m)^#{1,6}\h+", "")
+    texto := RegExReplace(NormalizarTextoAtualizacao(texto), "m)^#{1,6}\h+", "")
     texto := RegExReplace(texto, "m)^-\h+", "• ")
     if camposVersoes.Has("notas")
         camposVersoes["notas"].Value := StrReplace(texto, "`n", "`r`n")
@@ -179,7 +179,7 @@ AcompanharAtualizacao() {
         if (resposta.Status != 200)
             throw Error("GitHub retornou HTTP " resposta.Status ". Tente novamente mais tarde.")
         if (etapaAtualizacao = "consulta") {
-            codigoDisponivel := resposta.ResponseText
+            codigoDisponivel := NormalizarTextoAtualizacao(resposta.ResponseText)
             versaoDisponivel := LerVersaoScript(codigoDisponivel)
             diferenca := CompararVersoes(versaoDisponivel, VERSAO)
             if (diferenca > 0)
@@ -218,9 +218,14 @@ AcompanharAtualizacao() {
     }
 }
 
+NormalizarTextoAtualizacao(texto) {
+    ; ResponseText preserva o BOM UTF-8, mas FileRead UTF-8 o remove.
+    return StrReplace(LTrim(texto, Chr(0xFEFF)), "`r`n", "`n")
+}
+
 LerVersaoScript(texto) {
     ; Le apenas a declaracao de versao; nunca executa codigo remoto na consulta.
-    if !RegExMatch(texto, 'm)^global VERSAO := "(\d+\.\d+\.\d+)"\r?$', &versao)
+    if !RegExMatch(NormalizarTextoAtualizacao(texto), 'm)^global VERSAO := "(\d+\.\d+\.\d+)"$', &versao)
         throw Error("O trove.ahk publicado não contém uma VERSAO válida.")
     return versao[1]
 }
@@ -229,10 +234,10 @@ ValidarArquivoAtualizacao(arquivo, texto) {
     global versaoDisponivel, codigoDisponivel
     if (arquivo = "trove.ahk") {
         if LerVersaoScript(texto) != versaoDisponivel
-            || !(StrReplace(texto, "`r`n", "`n") == StrReplace(codigoDisponivel, "`r`n", "`n"))
+            || !(NormalizarTextoAtualizacao(texto) == NormalizarTextoAtualizacao(codigoDisponivel))
             throw Error("O script publicado mudou desde a consulta. Verifique as atualizações novamente.")
     } else if (arquivo = "CHANGELOG.md") {
-        if !InStr("`n" StrReplace(texto, "`r"), "`n## [" versaoDisponivel "]")
+        if !InStr("`n" NormalizarTextoAtualizacao(texto), "`n## [" versaoDisponivel "]")
             throw Error("O CHANGELOG.md publicado não contém as notas da versão " versaoDisponivel ".")
     } else if (InStr(arquivo, "modulos\") = 1) {
         if (StrLen(Trim(texto)) < 20 || !InStr(codigoDisponivel, arquivo))

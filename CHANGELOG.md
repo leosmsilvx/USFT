@@ -1,4 +1,12 @@
-﻿## [2.11.1] - 2026-10-15
+## [2.11.2] - 2026-10-15
+
+### Correções
+- Corrigido o bloqueio de atualização causado pelo marcador UTF-8 invisível no início do arquivo, mesmo quando o código consultado e baixado era idêntico.
+- A comparação continua recusando alterações reais no script, mas tolera diferenças de marcador UTF-8 e quebras de linha.
+- Corrigida a exibição da primeira linha do changelog quando o arquivo publicado contém esse marcador.
+- Arquivo principal publicado sem marcador UTF-8 para compatibilidade com o atualizador da versão 2.11.0.
+
+## [2.11.1] - 2026-10-15
 
 ### Correções
 - A verificação da versão no GitHub começa imediatamente ao iniciar o trove.ahk, antes do carregamento do painel.

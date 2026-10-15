@@ -66,7 +66,9 @@ IniciarPainel() {
     painel.AddText("x0 y0 w3 h" PAINEL_ALTURA " Background" COR_BARRA_LATERAL, "")
     painel.SetFont("s10 cE7EDF5", FONTE_PAINEL)
     painel.SetFont("s12 bold cFFFFFF")
-    painel.AddText("x12 y8 w" (PAINEL_LARGURA - 24) " h24", "USFT")
+    painel.AddText("x12 y8 w62 h24", "USFT")
+    painel.SetFont("s8 norm cFFD479")
+    camposPainel["atualizacao"] := painel.AddText("x80 y12 w" (PAINEL_LARGURA - 92) " h18")
     painel.SetFont("s10 norm cE7EDF5")
     ; Rotulos, colchetes e indicadores separados: apenas os simbolos mudam de cor.
     ; Coordenadas e larguras fixas mantem Busca e Convite sempre alinhados.
@@ -162,6 +164,7 @@ AtualizarPainel() {
 
     AtualizarCampoPainel("auto", ativo ? "✓" : "✕", ativo ? "72E6A0" : "FF7272")
     AtualizarCampoPainel("amigos", convidarAmigos ? "✓" : "✕", convidarAmigos ? "72E6A0" : "FF7272")
+    AtualizarCampoPainel("atualizacao", TextoAtualizacaoPainel())
 
     nomesEstados := Map("PARADO", "", "PROCURANDO", "Procurando ship",
         "CARREGANDO", "Aguardando o mundo carregar", "CONVIDANDO", "Convidando amigos", "DUNGEON", "Farmando na dungeon",
@@ -212,6 +215,13 @@ AtualizarPainel() {
         ultimoX := px
         ultimoY := py
     }
+}
+
+TextoAtualizacaoPainel() {
+    global versaoDisponivel, VERSAO
+    if (versaoDisponivel != "" && CompararVersoes(versaoDisponivel, VERSAO) > 0)
+        return "Nova versão " versaoDisponivel " • F2"
+    return ""
 }
 
 AtualizarCampoPainel(chave, texto, cor := "") {

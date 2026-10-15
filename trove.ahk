@@ -26,7 +26,7 @@ global ARQUIVOS_USFT := [
 SendMode("Input")
 CoordMode("Pixel", "Client")
 
-; Includes opcionais permitem que clientes 2.10 baixem primeiro este bootstrap.
+; Includes opcionais permitem que clientes beta monoliticos baixem primeiro este bootstrap.
 #Include *i %A_ScriptDir%\modulos\configuracao.ahk
 #Include *i %A_ScriptDir%\modulos\estado.ahk
 #Include *i %A_ScriptDir%\modulos\farm.ahk
@@ -58,8 +58,8 @@ try {
 } catch Error as erro {
     MsgBox("Não foi possível criar amigos.txt.`n`n" erro.Message, "USFT - Amigos")
 }
-IniciarPainel()
 IniciarAtualizacoes()
+IniciarPainel()
 SetTimer(AtualizarPainel, 500)
 
 ; Hotkeys ficam por ultimo para encerrar corretamente a secao de inicializacao.

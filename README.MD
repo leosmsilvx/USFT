@@ -1,5 +1,7 @@
 # Trove AFK 1.0.0
 
+Versão atual: **v1.0.0**. Requer Windows e AutoHotkey v2.
+
 Execute somente **trove.ahk**.
 
 A pasta `modulos` precisa permanecer ao lado do arquivo principal. Não mova, renomeie ou execute os módulos individualmente.

@@ -169,7 +169,8 @@ AtualizarPainel() {
 
     nomesEstados := Map("PARADO", "", "PROCURANDO", "Procurando ship",
         "CARREGANDO", "Aguardando o mundo carregar", "CONVIDANDO", "Convidando amigos", "DUNGEON", "Farmando na dungeon",
-        "RESSUSCITANDO", "Aguardando ressurgir", "VERIFICANDO_DUNGEON", "Verificando dungeon atual")
+        "RESSUSCITANDO", "Aguardando ressurgir", "VERIFICANDO_DUNGEON", "Verificando dungeon atual",
+        "SAFETY_RESPAWN", "Safety-respawn: voltando ao HUB", "AGUARDANDO_HUB", "Aguardando o HUB carregar")
     descricao := nomesEstados.Has(estado) ? nomesEstados[estado] : estado
     if (estado = "DUNGEON" && !cronometroConfirmado)
         descricao := "Validando cronometro"

@@ -1,12 +1,16 @@
-# Trove AFK 1.0.4
+# Trove AFK 1.0.5
 
-Versão atual: **v1.0.4**. Requer Windows e AutoHotkey v2.
+Versão atual: **v1.0.5**. Requer Windows e AutoHotkey v2.
 
 Execute somente **trove.ahk**.
 
 A pasta `modulos` precisa permanecer ao lado do arquivo principal. Não mova, renomeie ou execute os módulos individualmente.
 
 Preencha `amigos.txt` com um nome por linha. Ao atualizar uma instalação existente, preserve o seu arquivo atual de amigos.
+
+## Morte e retorno seguro ao HUB
+
+A tela de morte é verificada durante todo o farm, mesmo com o cronômetro da ship ativo. Ao confirmar o renascimento, o safety-respawn envia **Ctrl+A**, aguarda **0,5 segundo** e pressiona **E** para voltar ao HUB. A busca por ships só recomeça após detectar o carregamento e a estabilização do mundo. Se a transição não for detectada em 15 segundos, o comando é repetido. Mantenha os atalhos do jogo configurados para essa sequência.
 
 ## Atalhos
 

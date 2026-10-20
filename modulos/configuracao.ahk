@@ -9,7 +9,8 @@ global arquivoFonteGoogle := ""
 global FUNDO_TRANSPARENTE := true ; false para manter o painel totalmente opaco.
 global OPACIDADE_FUNDO := 205 ; 0=invisivel, 255=opaco; textos sempre opacos.
 global INTERVALO_CHAT := 120000
-global MENSAGENS_SHIP := ["x ship pls", "x ship", "x", "x ship xD", "ship plss"]
+global MENSAGENS_SHIP := ["x ship pls", "x ship", "x", "x ship xD", "ship plss",
+    "x ship invite me", "x shipp", "x shiip", "x ship please :)", "invite for ship pls :D", "x need shiippp"]
 global INTERVALO_PULO := 240000
 global PAUSA_DUNGEON := 30 * 60 * 1000
 global INTERVALO_MONITOR := 500
@@ -24,7 +25,8 @@ global TEMPO_VALIDACAO_CRONOMETRO := 3 * 60 * 1000
 global INTERVALO_MORTE := 1000
 global INTERVALO_RESSUSCITAR := 15000
 global INTERVALO_CONFIRMAR_RESSURREICAO := 1000
-global ESPERA_APOS_RESSURREICAO := 5000
+global DELAY_SAFETY_RESPAWN := 500
+global LIMITE_SAFETY_RESPAWN := 15000
 global CONFIRMACAO_CRASH := 5000
 global ESPERA_BOOT_TROVE := 120000
 global CONFIRMACAO_BOOT_TROVE := 5000

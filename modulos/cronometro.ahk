@@ -52,7 +52,6 @@ VerificarCronometro() {
     global ultimaLeituraCronometro, cronometroConfirmado
     global processoOCR, resultadoOCR, INTERVALO_CRONOMETRO
     global CRONOMETRO_X, CRONOMETRO_Y, CRONOMETRO_W, CRONOMETRO_H
-    global processoMorte
     global estado, INTERVALO_CRONOMETRO_ATIVO, motivoRetornoCronometro
     global fimPausa, PAUSA_DUNGEON, ultimoPulo
     global inicioValidacaoCronometro, TEMPO_VALIDACAO_CRONOMETRO, validacaoAntesChat
@@ -126,7 +125,7 @@ VerificarCronometro() {
     }
 
     intervalo := cronometroConfirmado ? INTERVALO_CRONOMETRO_ATIVO : INTERVALO_CRONOMETRO
-    if (processoMorte || A_TickCount - ultimaLeituraCronometro < intervalo)
+    if (A_TickCount - ultimaLeituraCronometro < intervalo)
         return false
 
     ultimaLeituraCronometro := A_TickCount

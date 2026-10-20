@@ -14,6 +14,7 @@ Monitorar() {
     global inicioMundoRessurreicao
     global validacaoAntesChat, cronometroConfirmado
     global pularConvitesAposCrash
+    global inicioSafetyRespawn
 
     if (!ativo || verificando)
         return
@@ -28,6 +29,8 @@ Monitorar() {
         if !WinActive("ahk_exe Trove_x64.exe") {
             inicioMundo := 0
             inicioMundoRessurreicao := 0
+            if (estado = "SAFETY_RESPAWN")
+                inicioSafetyRespawn := 0
             inicioPreto := 0
             ; Suspende a leitura, preservando contagem e confirmacao anteriores.
             SuspenderCronometro()
@@ -42,10 +45,14 @@ Monitorar() {
         if DetectarMudancaMundo(agora)
             return
 
-        ; Morte tem prioridade inclusive durante os 3 min de validacao do cronometro.
-        ; As travas processoOCR/processoMorte alternam os leitores sem sobreposicao.
+        ; Morte e cronometro possuem leitores independentes em todos os estados.
         if VerificarMorte()
             return
+
+        if (estado = "SAFETY_RESPAWN" || estado = "AGUARDANDO_HUB") {
+            AguardarSafetyRespawn()
+            return
+        }
 
         ; Identifica a dungeon antes de cada envio no chat.
         if (estado = "VERIFICANDO_DUNGEON") {
@@ -179,8 +186,9 @@ DetectarMudancaMundo(agora) {
     global estado, inicioPreto, pretoBloqueado, CONFIRMACAO_PRETO
     global inicioMundo, fimPausa, validacaoAntesChat, amigosPendentes
 
-    ; Estes dois estados ja aguardam o proprio carregamento.
-    if (estado = "CARREGANDO" || estado = "RESSUSCITANDO")
+    ; Recuperacao de morte e safety-respawn aguardam o proprio carregamento.
+    if (estado = "CARREGANDO" || estado = "RESSUSCITANDO"
+        || estado = "SAFETY_RESPAWN" || estado = "AGUARDANDO_HUB")
         return false
 
     if !TelaPreta() {

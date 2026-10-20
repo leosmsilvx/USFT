@@ -15,38 +15,99 @@ CancelarLeituraMorte() {
 ReiniciarMorte() {
     global ultimaVerificacaoMorte, ultimaLeituraMorte, INTERVALO_MORTE
     global ressurreicaoConfirmada, inicioMundoRessurreicao
+    global inicioSafetyRespawn, carregamentoHubDetectado
     CancelarLeituraMorte()
     ultimaVerificacaoMorte := A_TickCount - INTERVALO_MORTE
     ultimaLeituraMorte := "Verificacao a cada 1 segundo"
     ressurreicaoConfirmada := false
     inicioMundoRessurreicao := 0
+    inicioSafetyRespawn := 0
+    carregamentoHubDetectado := false
+    LimparErro("SAFETY")
 }
 
 AguardarRessurreicao() {
-    global ressurreicaoConfirmada, inicioMundoRessurreicao, ESPERA_APOS_RESSURREICAO
-    global processoMorte
+    global ressurreicaoConfirmada
 
     if (TelaPreta()) {
-        inicioMundoRessurreicao := 0
         ressurreicaoConfirmada := false
         return
     }
-    if (!ressurreicaoConfirmada) {
+    if (!ressurreicaoConfirmada)
+        return
+
+    IniciarSafetyRespawn()
+}
+
+IniciarSafetyRespawn() {
+    global ativo, estado, inicioSafetyRespawn, carregamentoHubDetectado
+    global inicioMundoRessurreicao, ressurreicaoConfirmada
+
+    if (!ativo || !WinActive("ahk_exe Trove_x64.exe") || TelaPreta())
+        return
+
+    CancelarLeituraMorte()
+    ReiniciarCronometro()
+    estado := "SAFETY_RESPAWN"
+    ressurreicaoConfirmada := false
+    carregamentoHubDetectado := false
+    inicioMundoRessurreicao := 0
+    SendEvent("^a")
+    inicioSafetyRespawn := A_TickCount
+    Avisar("SAFETY-RESPAWN - VOLTANDO AO HUB")
+}
+
+AguardarSafetyRespawn() {
+    global ativo, estado, inicioSafetyRespawn, carregamentoHubDetectado
+    global inicioMundoRessurreicao, DELAY_SAFETY_RESPAWN, LIMITE_SAFETY_RESPAWN
+    global CONFIRMACAO_MUNDO
+
+    if (!ativo || !WinActive("ahk_exe Trove_x64.exe"))
+        return
+
+    if (estado = "SAFETY_RESPAWN") {
+        ; Se houve perda de foco, reabre o comando antes de confirmar.
+        if (inicioSafetyRespawn = 0) {
+            IniciarSafetyRespawn()
+            return
+        }
+        if (A_TickCount - inicioSafetyRespawn < DELAY_SAFETY_RESPAWN || TelaPreta())
+            return
+        SendEvent("{e down}")
+        try Sleep(100)
+        finally SendEvent("{e up}")
+        if (!ativo || estado != "SAFETY_RESPAWN")
+            return
+        estado := "AGUARDANDO_HUB"
+        inicioSafetyRespawn := A_TickCount
+        return
+    }
+
+    if (TelaPreta()) {
+        carregamentoHubDetectado := true
         inicioMundoRessurreicao := 0
         return
     }
-    if (processoMorte)
+    if (carregamentoHubDetectado) {
+        if (inicioMundoRessurreicao = 0)
+            inicioMundoRessurreicao := A_TickCount
+        if (A_TickCount - inicioMundoRessurreicao >= CONFIRMACAO_MUNDO) {
+            LimparErro("SAFETY")
+            RetomarBuscaShip("HUB CARREGADO - PROCURANDO SHIP")
+        }
         return
-    if (inicioMundoRessurreicao = 0)
-        inicioMundoRessurreicao := A_TickCount
-    if (A_TickCount - inicioMundoRessurreicao >= ESPERA_APOS_RESSURREICAO)
-        RetomarBuscaShip("RESSURREICAO CONCLUIDA - PROCURANDO SHIP")
+    }
+
+    ; Nunca libera chat ou convites sem observar a transicao para o HUB.
+    if (A_TickCount - inicioSafetyRespawn >= LIMITE_SAFETY_RESPAWN) {
+        RegistrarErro("SAFETY", "Carregamento do HUB nao detectado. Repetindo safety-respawn.")
+        IniciarSafetyRespawn()
+    }
 }
 
 VerificarMorte() {
     global ativo, processoMorte, resultadoMorte, ultimaVerificacaoMorte
     global ultimaRessurreicao, ultimaLeituraMorte, INTERVALO_MORTE, INTERVALO_RESSUSCITAR
-    global processoOCR
     global estado, fimPausa, ressurreicaoConfirmada, inicioMundoRessurreicao
     global INTERVALO_CONFIRMAR_RESSURREICAO
 
@@ -54,9 +115,6 @@ VerificarMorte() {
         CancelarLeituraMorte()
         return false
     }
-    if (ultimaRessurreicao != 0 && A_TickCount - ultimaRessurreicao < 2500)
-        return true
-
     if (processoMorte) {
         if (A_TickCount - ultimaVerificacaoMorte > 10000) {
             ressurreicaoConfirmada := false
@@ -114,7 +172,7 @@ VerificarMorte() {
     }
 
     intervalo := estado = "RESSUSCITANDO" ? INTERVALO_CONFIRMAR_RESSURREICAO : INTERVALO_MORTE
-    if (A_TickCount - ultimaVerificacaoMorte < intervalo || processoOCR || TelaPreta())
+    if (A_TickCount - ultimaVerificacaoMorte < intervalo || TelaPreta())
         return false
 
     ultimaVerificacaoMorte := A_TickCount

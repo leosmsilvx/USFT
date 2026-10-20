@@ -1,10 +1,14 @@
 ## [1.0.5] - 2026-10-20
 
+Esta versão melhora a recuperação de mortes dentro das ships. O script continua verificando a tela de morte mesmo quando o cronômetro permanece funcionando e, após o renascimento, inicia o retorno seguro ao HUB para evitar mortes repetidas no ponto de spawn do mundo das ships. Somente após o carregamento a busca por uma nova ship é retomada.
+
 ### Morte e safety-respawn
 - A tela de morte é monitorada durante todo o farm, com leitura independente do cronômetro, inclusive quando ele continua ativo dentro de uma ship.
 - Ao confirmar o renascimento, o safety-respawn envia `Ctrl+A`, aguarda 0,5 segundo e pressiona `E` para voltar ao HUB.
 - A busca por ships e os convites só são retomados após detectar a transição e estabilização do mundo. Se o carregamento não for detectado em 15 segundos, o comando é tentado novamente.
 - Removida a espera fixa de cinco segundos após o renascimento para iniciar o retorno ao HUB imediatamente após a confirmação de vida.
+- O painel informa quando o safety-respawn está em andamento e quando está aguardando o carregamento do HUB.
+- A sequência de retorno é suspensa enquanto o Trove está sem foco ou o farm está pausado.
 
 ### Mensagens do chat
 - Adicionadas `x ship invite me`, `x shipp`, `x shiip`, `x ship please :)`, `invite for ship pls :D` e `x need shiippp`.
